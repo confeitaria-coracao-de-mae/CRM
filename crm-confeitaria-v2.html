@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRM Confeitaria</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FDF8F3; --surface: #FFFFFF; --surface2: #F5EFE8;
+    --border: #E8DDD2; --text: #1A1208; --text2: #6B5C4A; --text3: #A8967E;
+    --accent: #C8622A; --accent2: #F0A06A;
+    --novo: #3B82C4; --confirmado: #2E9E6B; --entregue: #7C5CBF;
+    --recorrente: #D97B20; --perdido: #B04040;
+    --radius: 12px; --shadow: 0 2px 12px rgba(26,18,8,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 15px; }
+
+  header { background: var(--text); color: var(--bg); padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; gap: 12px; }
+  header h1 { font-family: 'DM Serif Display', serif; font-size: 20px; font-weight: 400; white-space: nowrap; }
+  .header-right { display: flex; align-items: center; gap: 10px; }
+  .sync-badge { font-size: 11px; color: var(--text3); background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 20px; white-space: nowrap; }
+  .sync-badge.syncing { color: var(--accent2); }
+  .sync-badge.ok { color: #5EC98A; }
+  .btn-novo { background: var(--accent); color: white; border: none; border-radius: 8px; padding: 9px 16px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+
+  /* PERIODO TABS */
+  .periodo-tabs { display: flex; gap: 6px; padding: 14px 16px 0; overflow-x: auto; scrollbar-width: none; }
+  .periodo-tabs::-webkit-scrollbar { display: none; }
+  .periodo-btn { border: 1.5px solid var(--border); background: var(--surface); color: var(--text2); border-radius: 20px; padding: 6px 14px; font-size: 13px; font-family: 'DM Sans', sans-serif; cursor: pointer; white-space: nowrap; }
+  .periodo-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+
+  /* STATS */
+  .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 12px 16px 0; }
+  .stats-bottom { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 10px 16px 0; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; text-align: center; }
+  .stat-card.destaque { border-color: var(--confirmado); background: #E8F7F1; }
+  .stat-num { font-family: 'DM Serif Display', serif; font-size: 24px; color: var(--text); line-height: 1; }
+  .stat-card.destaque .stat-num { color: var(--confirmado); }
+  .stat-label { font-size: 11px; color: var(--text3); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* BREAKDOWN ORIGENS */
+  .breakdown { padding: 10px 16px 0; }
+  .breakdown-title { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .breakdown-grid { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding-bottom: 4px; }
+  .breakdown-grid::-webkit-scrollbar { display: none; }
+  .breakdown-item { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; text-align: center; min-width: 90px; flex-shrink: 0; }
+  .breakdown-item.active-origem { border-color: var(--accent); background: #FDF0E8; }
+  .breakdown-item-val { font-family: 'DM Serif Display', serif; font-size: 14px; color: var(--confirmado); }
+  .breakdown-item-label { font-size: 10px; color: var(--text3); margin-top: 2px; }
+  .breakdown-item-leads { font-size: 10px; color: var(--text2); margin-top: 1px; }
+
+  /* FILTROS */
+  .filtros-wrap { padding: 10px 16px 0; display: flex; flex-direction: column; gap: 6px; }
+  .filtros { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+  .filtros::-webkit-scrollbar { display: none; }
+  .filtro-btn { border: 1.5px solid var(--border); background: var(--surface); color: var(--text2); border-radius: 20px; padding: 6px 14px; font-size: 13px; font-family: 'DM Sans', sans-serif; cursor: pointer; white-space: nowrap; }
+  .filtro-btn.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+  .filtro-btn.active-origem { background: var(--accent); color: white; border-color: var(--accent); }
+  .filtro-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; padding-left: 2px; }
+
+  /* LEADS */
+  .leads-wrap { padding: 10px 16px 100px; display: flex; flex-direction: column; gap: 10px; }
+  .lead-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; box-shadow: var(--shadow); cursor: pointer; border-left: 4px solid var(--border); }
+  .lead-card.status-novo { border-left-color: var(--novo); }
+  .lead-card.status-confirmado { border-left-color: var(--confirmado); }
+  .lead-card.status-entregue { border-left-color: var(--entregue); }
+  .lead-card.status-recorrente { border-left-color: var(--recorrente); }
+  .lead-card.status-perdido { border-left-color: var(--perdido); }
+  .lead-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+  .lead-nome { font-weight: 600; font-size: 15px; }
+  .lead-tel { font-size: 13px; color: var(--text3); margin-top: 2px; }
+  .status-pill { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+  .status-pill.novo { background: #EBF2FA; color: var(--novo); }
+  .status-pill.confirmado { background: #E8F7F1; color: var(--confirmado); }
+  .status-pill.entregue { background: #F0EBF9; color: var(--entregue); }
+  .status-pill.recorrente { background: #FDF0E3; color: var(--recorrente); }
+  .status-pill.perdido { background: #FAEAEA; color: var(--perdido); }
+  .lead-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .origem-tag { font-size: 12px; color: var(--text3); background: var(--surface2); padding: 3px 10px; border-radius: 6px; }
+  .lead-data { font-size: 12px; color: var(--text3); }
+  .lead-valor { font-size: 12px; font-weight: 600; color: var(--confirmado); background: #E8F7F1; padding: 3px 10px; border-radius: 6px; }
+  .lead-pedidos-count { font-size: 11px; color: var(--recorrente); background: #FDF0E3; padding: 2px 8px; border-radius: 6px; }
+  .lead-obs { font-size: 13px; color: var(--text2); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); font-style: italic; }
+  .empty { text-align: center; padding: 60px 20px; color: var(--text3); }
+  .empty-icon { font-size: 40px; margin-bottom: 12px; }
+
+  /* MODAIS */
+  .overlay { position: fixed; inset: 0; background: rgba(26,18,8,0.5); z-index: 200; display: none; align-items: flex-end; justify-content: center; }
+  .overlay.open { display: flex; }
+  .modal { background: var(--surface); border-radius: 20px 20px 0 0; width: 100%; max-width: 520px; max-height: 92vh; overflow-y: auto; padding: 24px 20px 40px; animation: slideUp 0.25s ease; }
+  @keyframes slideUp { from { transform: translateY(60px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 20px; }
+  .modal-title { font-family: 'DM Serif Display', serif; font-size: 22px; margin-bottom: 20px; }
+  .form-group { margin-bottom: 16px; }
+  .form-label { display: block; font-size: 12px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .form-input, .form-select, .form-textarea { width: 100%; border: 1.5px solid var(--border); border-radius: 10px; padding: 12px 14px; font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--text); background: var(--bg); outline: none; -webkit-appearance: none; }
+  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); }
+  .form-textarea { resize: none; height: 80px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .btn-salvar { width: 100%; background: var(--accent); color: white; border: none; border-radius: 12px; padding: 15px; font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 8px; }
+  .btn-salvar:disabled { background: var(--text3); cursor: not-allowed; }
+  .btn-cancelar { width: 100%; background: transparent; color: var(--text3); border: none; padding: 12px; font-family: 'DM Sans', sans-serif; font-size: 14px; cursor: pointer; margin-top: 4px; }
+
+  /* DETALHE */
+  .detalhe-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .detalhe-avatar { width: 48px; height: 48px; border-radius: 50%; background: var(--surface2); display: flex; align-items: center; justify-content: center; font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--accent); flex-shrink: 0; }
+  .detalhe-nome { font-family: 'DM Serif Display', serif; font-size: 20px; }
+  .detalhe-tel { font-size: 13px; color: var(--text3); }
+  .detalhe-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+  .detalhe-row-label { color: var(--text3); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .detalhe-row-val { font-weight: 500; }
+  .valor-destaque { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--confirmado); }
+  .status-select-wrap { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 16px 0; }
+  .status-opt { border: 2px solid var(--border); border-radius: 10px; padding: 10px 6px; text-align: center; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text2); }
+  .status-opt.sel-novo { border-color: var(--novo); background: #EBF2FA; color: var(--novo); }
+  .status-opt.sel-confirmado { border-color: var(--confirmado); background: #E8F7F1; color: var(--confirmado); }
+  .status-opt.sel-entregue { border-color: var(--entregue); background: #F0EBF9; color: var(--entregue); }
+  .status-opt.sel-recorrente { border-color: var(--recorrente); background: #FDF0E3; color: var(--recorrente); }
+  .status-opt.sel-perdido { border-color: var(--perdido); background: #FAEAEA; color: var(--perdido); }
+  .btn-wpp { width: 100%; background: #25D366; color: white; border: none; border-radius: 12px; padding: 14px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .btn-excluir { width: 100%; background: transparent; color: var(--perdido); border: 1.5px solid #FAEAEA; border-radius: 12px; padding: 12px; font-family: 'DM Sans', sans-serif; font-size: 14px; cursor: pointer; margin-top: 8px; }
+
+  /* HISTÓRICO DE PEDIDOS */
+  .historico-wrap { margin-top: 16px; }
+  .historico-title { font-size: 12px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .pedido-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: var(--surface2); border-radius: 8px; margin-bottom: 6px; font-size: 13px; }
+  .pedido-data { color: var(--text3); }
+  .pedido-val { font-weight: 600; color: var(--confirmado); }
+
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--text); color: var(--bg); padding: 12px 20px; border-radius: 10px; font-size: 14px; z-index: 999; transition: transform 0.3s; white-space: nowrap; }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 380px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .form-row { grid-template-columns: 1fr; }
+    .status-select-wrap { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🍰 CRM Confeitaria</h1>
+  <div class="header-right">
+    <span class="sync-badge" id="sync-badge">● Offline</span>
+    <button class="btn-novo" onclick="abrirModalNovo()">+ Lead</button>
+  </div>
+</header>
+
+<div class="periodo-tabs" id="periodo-tabs"></div>
+<div class="stats" id="stats-area"></div>
+<div class="stats-bottom" id="stats-bottom"></div>
+<div class="breakdown" id="breakdown-area"></div>
+<div class="filtros-wrap" id="filtros-wrap"></div>
+<div class="leads-wrap" id="leads-area"></div>
+
+<!-- MODAL NOVO LEAD -->
+<div class="overlay" id="overlay-novo" onclick="fecharOverlay('overlay-novo')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modal-titulo">Novo lead</div>
+    <div class="form-group">
+      <label class="form-label">Nome</label>
+      <input class="form-input" id="inp-nome" placeholder="Nome do cliente" autocomplete="off">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Telefone</label>
+        <input class="form-input" id="inp-tel" placeholder="41 99999-9999" type="tel">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Origem</label>
+        <select class="form-select" id="inp-origem">
+          <option value="meta">📢 Meta Ads</option>
+          <option value="google_ads">🔍 Google Ads</option>
+          <option value="google_maps">📍 Google Maps</option>
+          <option value="cardapio">🍰 Cardápio</option>
+          <option value="presencial">🏪 Presencial</option>
+          <option value="indicacao">🤝 Indicação</option>
+          <option value="whatsapp">💬 WhatsApp</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Valor (R$)</label>
+        <input class="form-input" id="inp-valor" placeholder="0,00" type="number" step="0.01" min="0">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <select class="form-select" id="inp-status">
+          <option value="novo">Novo contato</option>
+          <option value="confirmado">Confirmado</option>
+          <option value="entregue">Entregue</option>
+          <option value="recorrente">Recorrente</option>
+          <option value="perdido">Perdido</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Observação</label>
+      <textarea class="form-textarea" id="inp-obs" placeholder="Pedido, produto, data de entrega..."></textarea>
+    </div>
+    <input type="hidden" id="inp-id">
+    <button class="btn-salvar" id="btn-salvar-lead" onclick="salvarLead()">Salvar lead</button>
+    <button class="btn-cancelar" onclick="fecharOverlay('overlay-novo')">Cancelar</button>
+  </div>
+</div>
+
+<!-- MODAL DETALHE -->
+<div class="overlay" id="overlay-detalhe" onclick="fecharOverlay('overlay-detalhe')">
+  <div class="modal" onclick="event.stopPropagation()" id="modal-detalhe-content"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyDyirnoziYz8wtnDAtmQF-JJpQW5Qj_Z_jmetzmeczEnt3um_7iDUh3qjjYxQQ028/exec';
+
+let leads = [];
+let filtroAtivo = 'todos';
+let origemAtiva = 'todas';
+let periodoAtivo = 'tudo';
+let editandoId = null;
+
+const ORIGENS = {
+  meta: '📢 Meta Ads',
+  google_ads: '🔍 Google Ads',
+  google_maps: '📍 Google Maps',
+  cardapio: '🍰 Cardápio',
+  presencial: '🏪 Presencial',
+  indicacao: '🤝 Indicação',
+  whatsapp: '💬 WhatsApp',
+  // compatibilidade legado
+  google: '🔍 Google Ads',
+};
+
+const ORIGENS_FILTRO = [
+  { key: 'todas', label: 'Todas' },
+  { key: 'meta', label: '📢 Meta' },
+  { key: 'google_ads', label: '🔍 Google Ads' },
+  { key: 'google_maps', label: '📍 Maps' },
+  { key: 'cardapio', label: '🍰 Cardápio' },
+  { key: 'whatsapp', label: '💬 WhatsApp' },
+  { key: 'presencial', label: '🏪 Presencial' },
+  { key: 'indicacao', label: '🤝 Indicação' },
+];
+
+const STATUS_LIST = [
+  { key: 'novo', label: 'Novo contato' },
+  { key: 'confirmado', label: 'Confirmado' },
+  { key: 'entregue', label: 'Entregue' },
+  { key: 'recorrente', label: 'Recorrente' },
+  { key: 'perdido', label: 'Perdido' },
+];
+
+const PERIODOS = [
+  { key: 'hoje', label: 'Hoje' },
+  { key: 'semana', label: 'Esta semana' },
+  { key: 'mes', label: 'Este mês' },
+  { key: 'tudo', label: 'Tudo' },
+];
+
+// ========== LOCAL STORAGE ==========
+function salvarLocal() { localStorage.setItem('crm_confeitaria_v3', JSON.stringify(leads)); }
+function carregarLocal() { const d = localStorage.getItem('crm_confeitaria_v3'); leads = d ? JSON.parse(d) : []; }
+
+// ========== HELPERS ==========
+function totalLead(l) {
+  if (l.pedidos && l.pedidos.length) return l.pedidos.reduce((s, p) => s + (parseFloat(p.valor) || 0), 0);
+  return parseFloat(l.valor) || 0;
+}
+
+function ultimaAtividade(l) {
+  // usa ultimaInteracao se existir, senão data original
+  return l.ultimaInteracao || l.data || '';
+}
+
+function filtrarPorPeriodo(lista) {
+  const agora = new Date();
+  const hoje = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate());
+  const inicioSemana = new Date(hoje); inicioSemana.setDate(hoje.getDate() - hoje.getDay());
+  const inicioMes = new Date(agora.getFullYear(), agora.getMonth(), 1);
+  return lista.filter(l => {
+    const ref = ultimaAtividade(l);
+    if (!ref) return periodoAtivo === 'tudo';
+    const d = new Date(ref);
+    if (periodoAtivo === 'hoje') return d >= hoje;
+    if (periodoAtivo === 'semana') return d >= inicioSemana;
+    if (periodoAtivo === 'mes') return d >= inicioMes;
+    return true;
+  });
+}
+
+function calcularFaturamento(lista) {
+  return lista
+    .filter(l => ['confirmado','entregue','recorrente'].includes(l.status))
+    .reduce((acc, l) => acc + totalLead(l), 0);
+}
+
+function formatarValor(v) {
+  return 'R$ ' + parseFloat(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function formatarDataHora(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  const dia = d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+  const hora = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  return `${dia} ${hora}`;
+}
+
+function normalizarOrigem(o) {
+  if (!o) return 'whatsapp';
+  if (o === 'google') return 'google_ads'; // legado
+  return o;
+}
+
+// ========== SHEETS SYNC ==========
+async function syncSheets(acao, payload) {
+  if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'COLE_SUA_URL_AQUI') return;
+  try {
+    setBadge('syncing', '⟳ Sincronizando');
+    await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ acao, ...payload }) });
+    setBadge('ok', '✓ Sincronizado');
+    setTimeout(() => setBadge('', '● Online'), 3000);
+  } catch { setBadge('', '● Offline'); }
+}
+
+async function carregarDoSheets() {
+  if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'COLE_SUA_URL_AQUI') return;
+  try {
+    setBadge('syncing', '⟳ Carregando');
+    const r = await fetch(APPS_SCRIPT_URL + '?acao=listar');
+    const json = await r.json();
+    if (json.leads) { leads = json.leads; salvarLocal(); renderTudo(); setBadge('ok', '✓ Atualizado'); setTimeout(() => setBadge('', '● Online'), 2000); }
+  } catch { setBadge('', '● Offline'); }
+}
+
+function setBadge(tipo, txt) {
+  const b = document.getElementById('sync-badge');
+  b.className = 'sync-badge ' + tipo;
+  b.textContent = txt;
+}
+
+// ========== RENDER ==========
+function renderTudo() { renderPeriodos(); renderStats(); renderBreakdown(); renderFiltros(); renderLeads(); }
+
+function renderPeriodos() {
+  document.getElementById('periodo-tabs').innerHTML = PERIODOS.map(p =>
+    `<button class="periodo-btn ${periodoAtivo === p.key ? 'active' : ''}" onclick="setPeriodo('${p.key}')">${p.label}</button>`
+  ).join('');
+}
+
+function setPeriodo(key) { periodoAtivo = key; renderTudo(); }
+
+function renderStats() {
+  let filtrados = filtrarPorPeriodo(leads);
+  if (origemAtiva !== 'todas') filtrados = filtrados.filter(l => normalizarOrigem(l.origem) === origemAtiva);
+  const total = filtrados.length;
+  const vendas = filtrados.filter(l => ['confirmado','entregue','recorrente'].includes(l.status)).length;
+  const tx = total ? Math.round((vendas / total) * 100) : 0;
+  const faturamento = calcularFaturamento(filtrados);
+  const ticket = vendas ? faturamento / vendas : 0;
+
+  document.getElementById('stats-area').innerHTML = `
+    <div class="stat-card destaque">
+      <div class="stat-num">${formatarValor(faturamento)}</div>
+      <div class="stat-label">Faturamento</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">${total}</div>
+      <div class="stat-label">Leads</div>
+    </div>
+  `;
+  document.getElementById('stats-bottom').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-num">${vendas}</div>
+      <div class="stat-label">Vendas</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">${tx}%</div>
+      <div class="stat-label">Conversão</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">${formatarValor(ticket)}</div>
+      <div class="stat-label">Ticket médio</div>
+    </div>
+  `;
+}
+
+function renderBreakdown() {
+  const filtrados = filtrarPorPeriodo(leads);
+  const origens = ['meta','google_ads','google_maps','cardapio','whatsapp','presencial','indicacao'];
+  const items = origens.map(ok => {
+    const grupo = filtrados.filter(l => normalizarOrigem(l.origem) === ok);
+    const fat = calcularFaturamento(grupo);
+    return { key: ok, label: ORIGENS[ok] || ok, fat, leads: grupo.length };
+  }).filter(i => i.leads > 0);
+
+  if (!items.length) { document.getElementById('breakdown-area').innerHTML = ''; return; }
+
+  document.getElementById('breakdown-area').innerHTML = `
+    <div class="breakdown-title" style="padding-top:10px">Por canal</div>
+    <div class="breakdown-grid">
+      ${items.map(i => `
+        <div class="breakdown-item ${origemAtiva === i.key ? 'active-origem' : ''}" onclick="setOrigem('${i.key}')">
+          <div class="breakdown-item-val">${formatarValor(i.fat)}</div>
+          <div class="breakdown-item-label">${i.label}</div>
+          <div class="breakdown-item-leads">${i.leads} lead${i.leads > 1 ? 's' : ''}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function setOrigem(key) {
+  origemAtiva = origemAtiva === key ? 'todas' : key;
+  renderTudo();
+}
+
+function renderFiltros() {
+  document.getElementById('filtros-wrap').innerHTML = `
+    <div class="filtros">
+      ${[{ key: 'todos', label: 'Todos' }, ...STATUS_LIST].map(o =>
+        `<button class="filtro-btn ${filtroAtivo === o.key ? 'active' : ''}" onclick="setFiltro('${o.key}')">${o.label}</button>`
+      ).join('')}
+    </div>
+  `;
+}
+
+function setFiltro(key) { filtroAtivo = key; renderFiltros(); renderLeads(); }
+
+function renderLeads() {
+  let filtrados = filtrarPorPeriodo(leads);
+  if (filtroAtivo !== 'todos') filtrados = filtrados.filter(l => l.status === filtroAtivo);
+  if (origemAtiva !== 'todas') filtrados = filtrados.filter(l => normalizarOrigem(l.origem) === origemAtiva);
+  // Ordena pela última atividade (mais recente primeiro)
+  const sorted = [...filtrados].sort((a, b) => new Date(ultimaAtividade(b)) - new Date(ultimaAtividade(a)));
+  const area = document.getElementById('leads-area');
+  if (!sorted.length) {
+    area.innerHTML = `<div class="empty"><div class="empty-icon">🍰</div><p>Nenhum lead encontrado.</p></div>`;
+    return;
+  }
+  area.innerHTML = sorted.map(l => cardHTML(l)).join('');
+}
+
+function cardHTML(l) {
+  const statusLabel = STATUS_LIST.find(s => s.key === l.status)?.label || l.status;
+  const origemNorm = normalizarOrigem(l.origem);
+  const origemLabel = ORIGENS[origemNorm] || l.origem;
+  const dataHora = formatarDataHora(ultimaAtividade(l));
+  const idSafe = String(l.id).replace(/[^a-zA-Z0-9_-]/g, '_');
+  const total = totalLead(l);
+  const nPedidos = l.pedidos ? l.pedidos.length : (l.valor ? 1 : 0);
+  const valorHtml = total > 0 ? `<span class="lead-valor">${formatarValor(total)}</span>` : '';
+  const pedidosHtml = nPedidos > 1 ? `<span class="lead-pedidos-count">${nPedidos} pedidos</span>` : '';
+  return `
+    <div class="lead-card status-${l.status}" data-leadid="${idSafe}" onclick="abrirDetalhePorEl(this)">
+      <div class="lead-top">
+        <div>
+          <div class="lead-nome">${l.nome}</div>
+          <div class="lead-tel">${String(l.telefone || '')}</div>
+        </div>
+        <span class="status-pill ${l.status}">${statusLabel}</span>
+      </div>
+      <div class="lead-meta">
+        <span class="origem-tag">${origemLabel}</span>
+        ${dataHora ? `<span class="lead-data">${dataHora}</span>` : ''}
+        ${valorHtml}
+        ${pedidosHtml}
+      </div>
+      ${l.obs ? `<div class="lead-obs">${l.obs}</div>` : ''}
+    </div>
+  `;
+}
+
+function abrirDetalhePorEl(el) {
+  const idSafe = el.getAttribute('data-leadid');
+  const lead = leads.find(l => String(l.id).replace(/[^a-zA-Z0-9_-]/g, '_') === idSafe);
+  if (lead) abrirDetalhe(lead.id);
+}
+
+// ========== MODAL NOVO / EDITAR ==========
+function abrirModalNovo() {
+  editandoId = null;
+  document.getElementById('modal-titulo').textContent = 'Novo lead';
+  document.getElementById('btn-salvar-lead').textContent = 'Salvar lead';
+  document.getElementById('inp-nome').value = '';
+  document.getElementById('inp-tel').value = '';
+  document.getElementById('inp-obs').value = '';
+  document.getElementById('inp-valor').value = '';
+  document.getElementById('inp-origem').value = 'whatsapp';
+  document.getElementById('inp-status').value = 'novo';
+  document.getElementById('inp-id').value = '';
+  document.getElementById('overlay-novo').classList.add('open');
+  setTimeout(() => document.getElementById('inp-nome').focus(), 300);
+}
+
+function abrirModalEditar(id) {
+  const l = leads.find(x => x.id === id);
+  if (!l) return;
+  editandoId = id;
+  document.getElementById('modal-titulo').textContent = 'Editar lead';
+  document.getElementById('btn-salvar-lead').textContent = 'Atualizar';
+  document.getElementById('inp-nome').value = l.nome;
+  document.getElementById('inp-tel').value = String(l.telefone || '');
+  document.getElementById('inp-obs').value = l.obs || '';
+  document.getElementById('inp-valor').value = totalLead(l) || '';
+  document.getElementById('inp-origem').value = normalizarOrigem(l.origem);
+  document.getElementById('inp-status').value = l.status;
+  document.getElementById('inp-id').value = l.id;
+  fecharOverlay('overlay-detalhe');
+  document.getElementById('overlay-novo').classList.add('open');
+}
+
+function salvarLead() {
+  const nome = document.getElementById('inp-nome').value.trim();
+  if (!nome) { showToast('Informe o nome do cliente'); return; }
+  const btn = document.getElementById('btn-salvar-lead');
+  btn.disabled = true;
+  const novoValor = parseFloat(document.getElementById('inp-valor').value) || 0;
+  const agora = new Date().toISOString();
+
+  if (editandoId) {
+    const idx = leads.findIndex(l => l.id === editandoId);
+    const l = leads[idx];
+    // Se valor mudou, adiciona ao histórico de pedidos
+    if (novoValor > 0 && novoValor !== totalLead(l)) {
+      if (!l.pedidos) l.pedidos = l.valor ? [{ data: l.data, valor: l.valor }] : [];
+      l.pedidos.push({ data: agora, valor: novoValor });
+      l.valor = novoValor;
+    }
+    leads[idx] = {
+      ...l,
+      nome: nome,
+      telefone: document.getElementById('inp-tel').value.trim(),
+      obs: document.getElementById('inp-obs').value.trim(),
+      origem: document.getElementById('inp-origem').value,
+      status: document.getElementById('inp-status').value,
+      ultimaInteracao: agora,
+    };
+    salvarLocal();
+    syncSheets('atualizar', leads[idx]);
+  } else {
+    const valor = novoValor;
+    const lead = {
+      id: 'l' + Date.now(),
+      nome,
+      telefone: document.getElementById('inp-tel').value.trim(),
+      obs: document.getElementById('inp-obs').value.trim(),
+      origem: document.getElementById('inp-origem').value,
+      status: document.getElementById('inp-status').value,
+      valor: valor || '',
+      pedidos: valor > 0 ? [{ data: agora, valor }] : [],
+      data: agora,
+      ultimaInteracao: agora,
+    };
+    leads.unshift(lead);
+    salvarLocal();
+    syncSheets('adicionar', lead);
+  }
+
+  btn.disabled = false;
+  btn.textContent = editandoId ? 'Atualizar' : 'Salvar lead';
+  fecharOverlay('overlay-novo');
+  renderTudo();
+  showToast(editandoId ? 'Lead atualizado' : 'Lead adicionado');
+}
+
+// ========== MODAL DETALHE ==========
+function abrirDetalhe(id) {
+  const l = leads.find(x => x.id === id);
+  if (!l) return;
+  const statusLabel = STATUS_LIST.find(s => s.key === l.status)?.label || l.status;
+  const origemNorm = normalizarOrigem(l.origem);
+  const origemLabel = ORIGENS[origemNorm] || l.origem;
+  const dataHora = formatarDataHora(ultimaAtividade(l));
+  const inicial = l.nome.charAt(0).toUpperCase();
+  const telLimpo = String(l.telefone || '').replace(/\D/g, '');
+  const total = totalLead(l);
+
+  // Histórico de pedidos
+  let historicoHtml = '';
+  if (l.pedidos && l.pedidos.length > 0) {
+    const itens = l.pedidos.map(p => `
+      <div class="pedido-item">
+        <span class="pedido-data">${formatarDataHora(p.data)}</span>
+        <span class="pedido-val">${formatarValor(p.valor)}</span>
+      </div>
+    `).join('');
+    historicoHtml = `
+      <div class="historico-wrap">
+        <div class="historico-title">Histórico de pedidos</div>
+        ${itens}
+        <div class="pedido-item" style="background:var(--surface);border-top:1px solid var(--border);margin-top:4px">
+          <span style="font-weight:600;font-size:13px">Total acumulado</span>
+          <span class="pedido-val">${formatarValor(total)}</span>
+        </div>
+      </div>
+    `;
+  }
+
+  document.getElementById('modal-detalhe-content').innerHTML = `
+    <div class="modal-handle"></div>
+    <div class="detalhe-header">
+      <div class="detalhe-avatar">${inicial}</div>
+      <div>
+        <div class="detalhe-nome">${l.nome}</div>
+        <div class="detalhe-tel">${String(l.telefone || 'Sem telefone')}</div>
+      </div>
+    </div>
+    ${total > 0 ? `<div style="text-align:center;padding:12px 0 4px"><div class="valor-destaque">${formatarValor(total)}</div><div style="font-size:12px;color:var(--text3);margin-top:2px">TOTAL ACUMULADO</div></div>` : ''}
+    <div class="detalhe-row"><span class="detalhe-row-label">Origem</span><span class="detalhe-row-val">${origemLabel}</span></div>
+    <div class="detalhe-row"><span class="detalhe-row-label">Último contato</span><span class="detalhe-row-val">${dataHora}</span></div>
+    ${l.obs ? `<div class="detalhe-row"><span class="detalhe-row-label">Obs</span><span class="detalhe-row-val" style="text-align:right;max-width:200px">${l.obs}</span></div>` : ''}
+    ${historicoHtml}
+    <div style="margin-top:16px">
+      <div class="form-label" style="margin-bottom:10px">Status</div>
+      <div class="status-select-wrap">
+        ${STATUS_LIST.map(s => `<div class="status-opt ${l.status === s.key ? 'sel-' + s.key : ''}" onclick="atualizarStatus('${l.id}', '${s.key}')">${s.label}</div>`).join('')}
+      </div>
+    </div>
+    ${telLimpo ? `<button class="btn-wpp" onclick="abrirWpp('${telLimpo}')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Abrir no WhatsApp
+    </button>` : ''}
+    <button class="btn-cancelar" style="margin-top:8px" onclick="abrirModalEditar('${l.id}')">✏️ Editar informações</button>
+    <button class="btn-excluir" onclick="excluirLead('${l.id}')">Excluir lead</button>
+  `;
+  document.getElementById('overlay-detalhe').classList.add('open');
+}
+
+function atualizarStatus(id, novoStatus) {
+  const idx = leads.findIndex(l => l.id === id);
+  if (idx < 0) return;
+  leads[idx].status = novoStatus;
+  leads[idx].ultimaInteracao = new Date().toISOString();
+  salvarLocal();
+  syncSheets('atualizar', leads[idx]);
+  fecharOverlay('overlay-detalhe');
+  renderTudo();
+  showToast('Status: ' + STATUS_LIST.find(s => s.key === novoStatus)?.label);
+}
+
+function excluirLead(id) {
+  if (!confirm('Excluir este lead?')) return;
+  leads = leads.filter(l => l.id !== id);
+  salvarLocal();
+  syncSheets('excluir', { id });
+  fecharOverlay('overlay-detalhe');
+  renderTudo();
+  showToast('Lead excluído');
+}
+
+function abrirWpp(tel) { window.open('https://wa.me/55' + tel, '_blank'); }
+function fecharOverlay(id) { document.getElementById(id).classList.remove('open'); }
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function checarUrlParams() {
+  const params = new URLSearchParams(window.location.search);
+  const origem = params.get('origem');
+  if (origem) {
+    const agora = new Date().toISOString();
+    const lead = { id: 'l' + Date.now(), nome: 'Lead ' + new Date().toLocaleDateString('pt-BR'), telefone: params.get('tel') || '', origem, obs: '', status: 'novo', valor: '', pedidos: [], data: agora, ultimaInteracao: agora };
+    leads.unshift(lead);
+    salvarLocal();
+    syncSheets('adicionar', lead);
+    renderTudo();
+    showToast('Lead capturado: ' + (ORIGENS[origem] || origem));
+    window.history.replaceState({}, '', window.location.pathname);
+  }
+}
+
+// ========== INIT ==========
+carregarLocal();
+renderTudo();
+checarUrlParams();
+carregarDoSheets();
+setInterval(carregarDoSheets, 5 * 60 * 1000);
+</script>
+</body>
+</html>
