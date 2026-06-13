@@ -402,7 +402,7 @@ function renderStats() {
 
 function renderBreakdown() {
   const filtrados = filtrarPorPeriodo(leads);
-  const origens = ['meta_ads','instagram','facebook','google_ads','google_maps','cardapio','whatsapp','presencial','indicacao'];
+  const origens = ['meta_ads','instagram','facebook','meta_organico','google_ads','google_maps','cardapio','whatsapp','presencial','indicacao'];
   const items = origens.map(ok => {
     const grupo = filtrados.filter(l => normalizarOrigem(l.origem) === ok);
     const fat = calcularFaturamento(grupo);
