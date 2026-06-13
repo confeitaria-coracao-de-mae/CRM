@@ -658,18 +658,23 @@ function editarPedido(leadId, pedidoIdx) {
   const lead = leads.find(l => l.id === leadId);
   if (!lead || !lead.pedidos[pedidoIdx]) return;
   const pedido = lead.pedidos[pedidoIdx];
-  const novoValor = prompt(`Editar valor do pedido (${formatarDataHora(pedido.data)}):`, parseFloat(pedido.valor));
-  if (novoValor === null) return; // cancelou
-  const valorNum = parseFloat(novoValor);
-  if (isNaN(valorNum) || valorNum < 0) { showToast('Valor inválido'); return; }
+  const resposta = prompt(`Editar pedido (${formatarDataHora(pedido.data)})\n\nDigite o novo valor ou "excluir" para remover:`, parseFloat(pedido.valor));
+  if (resposta === null) return; // cancelou
   const idx = leads.findIndex(l => l.id === leadId);
-  leads[idx].pedidos[pedidoIdx].valor = valorNum;
+  if (resposta.trim().toLowerCase() === 'excluir') {
+    if (!confirm('Excluir este pedido?')) return;
+    leads[idx].pedidos.splice(pedidoIdx, 1);
+  } else {
+    const valorNum = parseFloat(resposta);
+    if (isNaN(valorNum) || valorNum < 0) { showToast('Valor inválido'); return; }
+    leads[idx].pedidos[pedidoIdx].valor = valorNum;
+  }
   leads[idx].valor = leads[idx].pedidos.reduce((s, p) => s + parseFloat(p.valor || 0), 0);
   leads[idx].ultimaInteracao = new Date().toISOString();
   salvarLocal();
   syncSheets('atualizar', leads[idx]);
-  abrirDetalhe(leadId); // reabre o modal atualizado
-  showToast('Pedido atualizado');
+  abrirDetalhe(leadId);
+  showToast(resposta.trim().toLowerCase() === 'excluir' ? 'Pedido excluído' : 'Pedido atualizado');
 }
 
 function excluirLead(id) {
