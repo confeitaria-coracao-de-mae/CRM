@@ -50,7 +50,6 @@
   .breakdown-item-val { font-family: 'DM Serif Display', serif; font-size: 14px; color: var(--confirmado); }
   .breakdown-item-label { font-size: 10px; color: var(--text3); margin-top: 2px; }
   .breakdown-item-leads { font-size: 10px; color: var(--text2); margin-top: 1px; }
-  .breakdown-item-vendas { font-size: 10px; color: var(--confirmado); margin-top: 2px; font-weight: 600; }
 
   /* FILTROS */
   .filtros-wrap { padding: 10px 16px 0; display: flex; flex-direction: column; gap: 6px; }
@@ -174,8 +173,7 @@
       <div class="form-group">
         <label class="form-label">Origem</label>
         <select class="form-select" id="inp-origem">
-          <option value="meta_ads">📢 Meta Ads</option>
-          <option value="meta_organico">📸 Instagram/FB Orgânico</option>
+          <option value="meta">📢 Meta Ads</option>
           <option value="google_ads">🔍 Google Ads</option>
           <option value="google_maps">📍 Google Maps</option>
           <option value="cardapio">🍰 Cardápio</option>
@@ -228,8 +226,7 @@ let periodoAtivo = 'tudo';
 let editandoId = null;
 
 const ORIGENS = {
-  meta_ads: '📢 Meta Ads',
-  meta_organico: '📸 Instagram/FB',
+  meta: '📢 Meta Ads',
   google_ads: '🔍 Google Ads',
   google_maps: '📍 Google Maps',
   cardapio: '🍰 Cardápio',
@@ -237,14 +234,12 @@ const ORIGENS = {
   indicacao: '🤝 Indicação',
   whatsapp: '💬 WhatsApp',
   // compatibilidade legado
-  meta: '📢 Meta Ads',
   google: '🔍 Google Ads',
 };
 
 const ORIGENS_FILTRO = [
   { key: 'todas', label: 'Todas' },
-  { key: 'meta_ads', label: '📢 Meta Ads' },
-  { key: 'meta_organico', label: '📸 Orgânico' },
+  { key: 'meta', label: '📢 Meta' },
   { key: 'google_ads', label: '🔍 Google Ads' },
   { key: 'google_maps', label: '📍 Maps' },
   { key: 'cardapio', label: '🍰 Cardápio' },
@@ -320,7 +315,6 @@ function formatarDataHora(iso) {
 function normalizarOrigem(o) {
   if (!o) return 'whatsapp';
   if (o === 'google') return 'google_ads'; // legado
-  if (o === 'meta') return 'meta_ads'; // legado
   return o;
 }
 
@@ -399,25 +393,22 @@ function renderStats() {
 
 function renderBreakdown() {
   const filtrados = filtrarPorPeriodo(leads);
-  const origens = ['meta_ads','meta_organico','google_ads','google_maps','cardapio','whatsapp','presencial','indicacao'];
-  const STATUS_VENDA = ['confirmado','entregue','recorrente'];
+  const origens = ['meta','google_ads','google_maps','cardapio','whatsapp','presencial','indicacao'];
   const items = origens.map(ok => {
     const grupo = filtrados.filter(l => normalizarOrigem(l.origem) === ok);
     const fat = calcularFaturamento(grupo);
-    const vendas = grupo.filter(l => STATUS_VENDA.includes(l.status)).length;
-    return { key: ok, label: ORIGENS[ok] || ok, fat, leads: grupo.length, vendas };
+    return { key: ok, label: ORIGENS[ok] || ok, fat, leads: grupo.length };
   }).filter(i => i.leads > 0);
 
   if (!items.length) { document.getElementById('breakdown-area').innerHTML = ''; return; }
 
   document.getElementById('breakdown-area').innerHTML = `
-    <div class="breakdown-title" style="padding-top:10px">Por canal — clique para filtrar</div>
+    <div class="breakdown-title" style="padding-top:10px">Por canal</div>
     <div class="breakdown-grid">
       ${items.map(i => `
         <div class="breakdown-item ${origemAtiva === i.key ? 'active-origem' : ''}" onclick="setOrigem('${i.key}')">
           <div class="breakdown-item-val">${formatarValor(i.fat)}</div>
           <div class="breakdown-item-label">${i.label}</div>
-          <div class="breakdown-item-vendas">✓ ${i.vendas} venda${i.vendas !== 1 ? 's' : ''}</div>
           <div class="breakdown-item-leads">${i.leads} lead${i.leads > 1 ? 's' : ''}</div>
         </div>
       `).join('')}
@@ -536,10 +527,14 @@ function salvarLead() {
   if (editandoId) {
     const idx = leads.findIndex(l => l.id === editandoId);
     const l = leads[idx];
-    // Se valor mudou, adiciona ao histórico de pedidos
+    // Edição corrige o último pedido (não soma — use o modal de detalhe para novos pedidos)
     if (novoValor > 0 && novoValor !== totalLead(l)) {
-      if (!l.pedidos) l.pedidos = l.valor ? [{ data: l.data, valor: l.valor }] : [];
-      l.pedidos.push({ data: agora, valor: novoValor });
+      if (!l.pedidos || l.pedidos.length === 0) {
+        l.pedidos = [{ data: l.data || agora, valor: novoValor }];
+      } else {
+        // Substitui o último pedido pelo valor corrigido
+        l.pedidos[l.pedidos.length - 1].valor = novoValor;
+      }
       l.valor = novoValor;
     }
     leads[idx] = {
