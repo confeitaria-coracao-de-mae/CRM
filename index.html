@@ -226,20 +226,26 @@ let periodoAtivo = 'tudo';
 let editandoId = null;
 
 const ORIGENS = {
-  meta: '📢 Meta Ads',
+  meta_ads: '📢 Meta Ads',
+  meta_organico: '📘 Facebook Orgânico',
+  instagram: '📸 Instagram',
+  facebook: '📘 Facebook',
   google_ads: '🔍 Google Ads',
   google_maps: '📍 Google Maps',
   cardapio: '🍰 Cardápio',
   presencial: '🏪 Presencial',
   indicacao: '🤝 Indicação',
   whatsapp: '💬 WhatsApp',
-  // compatibilidade legado
+  // legado
+  meta: '📢 Meta Ads',
   google: '🔍 Google Ads',
 };
 
 const ORIGENS_FILTRO = [
   { key: 'todas', label: 'Todas' },
-  { key: 'meta', label: '📢 Meta' },
+  { key: 'meta_ads', label: '📢 Meta Ads' },
+  { key: 'instagram', label: '📸 Instagram' },
+  { key: 'facebook', label: '📘 Facebook' },
   { key: 'google_ads', label: '🔍 Google Ads' },
   { key: 'google_maps', label: '📍 Maps' },
   { key: 'cardapio', label: '🍰 Cardápio' },
@@ -313,7 +319,8 @@ function formatarDataHora(iso) {
 
 function normalizarOrigem(o) {
   if (!o) return 'whatsapp';
-  if (o === 'google') return 'google_ads'; // legado
+  if (o === 'google') return 'google_ads';       // legado
+  if (o === 'meta') return 'meta_ads';            // legado
   return o;
 }
 
@@ -395,7 +402,7 @@ function renderStats() {
 
 function renderBreakdown() {
   const filtrados = filtrarPorPeriodo(leads);
-  const origens = ['meta','google_ads','google_maps','cardapio','whatsapp','presencial','indicacao'];
+  const origens = ['meta_ads','instagram','facebook','google_ads','google_maps','cardapio','whatsapp','presencial','indicacao'];
   const items = origens.map(ok => {
     const grupo = filtrados.filter(l => normalizarOrigem(l.origem) === ok);
     const fat = calcularFaturamento(grupo);
