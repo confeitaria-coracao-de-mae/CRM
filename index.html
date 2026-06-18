@@ -226,26 +226,20 @@ let periodoAtivo = 'tudo';
 let editandoId = null;
 
 const ORIGENS = {
-  meta_ads: '📢 Meta Ads',
-  meta_organico: '📘 Facebook Orgânico',
-  instagram: '📸 Instagram',
-  facebook: '📘 Facebook',
+  meta: '📢 Meta Ads',
   google_ads: '🔍 Google Ads',
   google_maps: '📍 Google Maps',
   cardapio: '🍰 Cardápio',
   presencial: '🏪 Presencial',
   indicacao: '🤝 Indicação',
   whatsapp: '💬 WhatsApp',
-  // legado
-  meta: '📢 Meta Ads',
+  // compatibilidade legado
   google: '🔍 Google Ads',
 };
 
 const ORIGENS_FILTRO = [
   { key: 'todas', label: 'Todas' },
-  { key: 'meta_ads', label: '📢 Meta Ads' },
-  { key: 'instagram', label: '📸 Instagram' },
-  { key: 'facebook', label: '📘 Facebook' },
+  { key: 'meta', label: '📢 Meta' },
   { key: 'google_ads', label: '🔍 Google Ads' },
   { key: 'google_maps', label: '📍 Maps' },
   { key: 'cardapio', label: '🍰 Cardápio' },
@@ -257,6 +251,7 @@ const ORIGENS_FILTRO = [
 const STATUS_LIST = [
   { key: 'novo', label: 'Novo contato' },
   { key: 'confirmado', label: 'Confirmado' },
+  { key: 'entregue', label: 'Entregue' },
   { key: 'recorrente', label: 'Recorrente' },
   { key: 'perdido', label: 'Perdido' },
 ];
@@ -319,8 +314,7 @@ function formatarDataHora(iso) {
 
 function normalizarOrigem(o) {
   if (!o) return 'whatsapp';
-  if (o === 'google') return 'google_ads';       // legado
-  if (o === 'meta') return 'meta_ads';            // legado
+  if (o === 'google') return 'google_ads'; // legado
   return o;
 }
 
@@ -341,10 +335,7 @@ async function carregarDoSheets() {
     setBadge('syncing', '⟳ Carregando');
     const r = await fetch(APPS_SCRIPT_URL + '?acao=listar');
     const json = await r.json();
-    if (json.leads) {
-      leads = json.leads;
-      salvarLocal(); renderTudo(); setBadge('ok', '✓ Atualizado'); setTimeout(() => setBadge('', '● Online'), 2000);
-    }
+    if (json.leads) { leads = json.leads; salvarLocal(); renderTudo(); setBadge('ok', '✓ Atualizado'); setTimeout(() => setBadge('', '● Online'), 2000); }
   } catch { setBadge('', '● Offline'); }
 }
 
@@ -402,12 +393,12 @@ function renderStats() {
 
 function renderBreakdown() {
   const filtrados = filtrarPorPeriodo(leads);
-  const origens = ['meta_ads','instagram','facebook','meta_organico','google_ads','google_maps','cardapio','whatsapp','presencial','indicacao'];
+  const origens = ['meta_ads','instagram','facebook','google_ads','google_maps','cardapio','whatsapp','presencial','indicacao'];
   const items = origens.map(ok => {
     const grupo = filtrados.filter(l => normalizarOrigem(l.origem) === ok);
     const fat = calcularFaturamento(grupo);
     return { key: ok, label: ORIGENS[ok] || ok, fat, leads: grupo.length };
-  }).filter(i => i.leads > 0);
+  });
 
   if (!items.length) { document.getElementById('breakdown-area').innerHTML = ''; return; }
 
@@ -536,14 +527,10 @@ function salvarLead() {
   if (editandoId) {
     const idx = leads.findIndex(l => l.id === editandoId);
     const l = leads[idx];
-    // Edição corrige o último pedido (não soma — use o modal de detalhe para novos pedidos)
+    // Se valor mudou, adiciona ao histórico de pedidos
     if (novoValor > 0 && novoValor !== totalLead(l)) {
-      if (!l.pedidos || l.pedidos.length === 0) {
-        l.pedidos = [{ data: l.data || agora, valor: novoValor }];
-      } else {
-        // Substitui o último pedido pelo valor corrigido
-        l.pedidos[l.pedidos.length - 1].valor = novoValor;
-      }
+      if (!l.pedidos) l.pedidos = l.valor ? [{ data: l.data, valor: l.valor }] : [];
+      l.pedidos.push({ data: agora, valor: novoValor });
       l.valor = novoValor;
     }
     leads[idx] = {
@@ -598,13 +585,10 @@ function abrirDetalhe(id) {
   // Histórico de pedidos
   let historicoHtml = '';
   if (l.pedidos && l.pedidos.length > 0) {
-    const itens = l.pedidos.map((p, idx) => `
+    const itens = l.pedidos.map(p => `
       <div class="pedido-item">
         <span class="pedido-data">${formatarDataHora(p.data)}</span>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span class="pedido-val">${formatarValor(p.valor)}</span>
-          <button onclick="editarPedido('${l.id}', ${idx})" style="background:none;border:1px solid var(--border);border-radius:6px;padding:2px 8px;font-size:11px;color:var(--text2);cursor:pointer;">✏️</button>
-        </div>
+        <span class="pedido-val">${formatarValor(p.valor)}</span>
       </div>
     `).join('');
     historicoHtml = `
@@ -659,29 +643,6 @@ function atualizarStatus(id, novoStatus) {
   fecharOverlay('overlay-detalhe');
   renderTudo();
   showToast('Status: ' + STATUS_LIST.find(s => s.key === novoStatus)?.label);
-}
-
-function editarPedido(leadId, pedidoIdx) {
-  const lead = leads.find(l => l.id === leadId);
-  if (!lead || !lead.pedidos[pedidoIdx]) return;
-  const pedido = lead.pedidos[pedidoIdx];
-  const resposta = prompt(`Editar pedido (${formatarDataHora(pedido.data)})\n\nDigite o novo valor ou "excluir" para remover:`, parseFloat(pedido.valor));
-  if (resposta === null) return; // cancelou
-  const idx = leads.findIndex(l => l.id === leadId);
-  if (resposta.trim().toLowerCase() === 'excluir') {
-    if (!confirm('Excluir este pedido?')) return;
-    leads[idx].pedidos.splice(pedidoIdx, 1);
-  } else {
-    const valorNum = parseFloat(resposta);
-    if (isNaN(valorNum) || valorNum < 0) { showToast('Valor inválido'); return; }
-    leads[idx].pedidos[pedidoIdx].valor = valorNum;
-  }
-  leads[idx].valor = leads[idx].pedidos.reduce((s, p) => s + parseFloat(p.valor || 0), 0);
-  leads[idx].ultimaInteracao = new Date().toISOString();
-  salvarLocal();
-  syncSheets('atualizar', leads[idx]);
-  abrirDetalhe(leadId);
-  showToast(resposta.trim().toLowerCase() === 'excluir' ? 'Pedido excluído' : 'Pedido atualizado');
 }
 
 function excluirLead(id) {
