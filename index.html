@@ -226,20 +226,26 @@ let periodoAtivo = 'tudo';
 let editandoId = null;
 
 const ORIGENS = {
-  meta: '📢 Meta Ads',
+  meta_ads: '📢 Meta Ads',
+  instagram: '📸 Instagram',
+  facebook: '📘 Facebook',
   google_ads: '🔍 Google Ads',
   google_maps: '📍 Google Maps',
   cardapio: '🍰 Cardápio',
   presencial: '🏪 Presencial',
   indicacao: '🤝 Indicação',
   whatsapp: '💬 WhatsApp',
-  // compatibilidade legado
+  // legado
+  meta: '📢 Meta Ads',
+  meta_organico: '📱 Org. Meta',
   google: '🔍 Google Ads',
 };
 
 const ORIGENS_FILTRO = [
   { key: 'todas', label: 'Todas' },
-  { key: 'meta', label: '📢 Meta' },
+  { key: 'meta_ads', label: '📢 Meta Ads' },
+  { key: 'instagram', label: '📸 Instagram' },
+  { key: 'facebook', label: '📘 Facebook' },
   { key: 'google_ads', label: '🔍 Google Ads' },
   { key: 'google_maps', label: '📍 Maps' },
   { key: 'cardapio', label: '🍰 Cardápio' },
@@ -251,10 +257,11 @@ const ORIGENS_FILTRO = [
 const STATUS_LIST = [
   { key: 'novo', label: 'Novo contato' },
   { key: 'confirmado', label: 'Confirmado' },
-  { key: 'entregue', label: 'Entregue' },
   { key: 'recorrente', label: 'Recorrente' },
   { key: 'perdido', label: 'Perdido' },
 ];
+
+
 
 const PERIODOS = [
   { key: 'hoje', label: 'Hoje' },
