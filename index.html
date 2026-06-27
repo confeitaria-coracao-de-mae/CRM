@@ -25,13 +25,11 @@
   .sync-badge.ok { color: #5EC98A; }
   .btn-novo { background: var(--accent); color: white; border: none; border-radius: 8px; padding: 9px 16px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; }
 
-  /* PERIODO TABS */
   .periodo-tabs { display: flex; gap: 6px; padding: 14px 16px 0; overflow-x: auto; scrollbar-width: none; }
   .periodo-tabs::-webkit-scrollbar { display: none; }
   .periodo-btn { border: 1.5px solid var(--border); background: var(--surface); color: var(--text2); border-radius: 20px; padding: 6px 14px; font-size: 13px; font-family: 'DM Sans', sans-serif; cursor: pointer; white-space: nowrap; }
   .periodo-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
 
-  /* STATS */
   .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 12px 16px 0; }
   .stats-bottom { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 10px 16px 0; }
   .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; text-align: center; }
@@ -40,27 +38,39 @@
   .stat-card.destaque .stat-num { color: var(--confirmado); }
   .stat-label { font-size: 11px; color: var(--text3); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
 
-  /* BREAKDOWN ORIGENS */
   .breakdown { padding: 10px 16px 0; }
   .breakdown-title { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
   .breakdown-grid { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding-bottom: 4px; }
   .breakdown-grid::-webkit-scrollbar { display: none; }
-  .breakdown-item { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; text-align: center; min-width: 90px; flex-shrink: 0; }
+  .breakdown-item { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; text-align: center; min-width: 96px; flex-shrink: 0; cursor: pointer; }
   .breakdown-item.active-origem { border-color: var(--accent); background: #FDF0E8; }
+  .breakdown-item.alerta-zero { border-color: #E8A020; background: #FDF6E8; }
+  .breakdown-item.alerta-zero .breakdown-item-val { color: #B07010; }
   .breakdown-item-val { font-family: 'DM Serif Display', serif; font-size: 14px; color: var(--confirmado); }
   .breakdown-item-label { font-size: 10px; color: var(--text3); margin-top: 2px; }
   .breakdown-item-leads { font-size: 10px; color: var(--text2); margin-top: 1px; }
+  .breakdown-item-conv { font-size: 10px; color: var(--text3); margin-top: 2px; font-weight: 600; }
+  .filtro-btn.sem-valor { border-color: #E8A020; color: #B07010; background: #FDF6E8; }
+  .filtro-btn.sem-valor.active { background: #E8A020; color: white; border-color: #E8A020; }
 
-  /* FILTROS */
+  /* SELETOR DE MÊS */
+  .mes-picker-wrap { position: relative; display: inline-block; }
+  .btn-mes { border: 1.5px solid var(--border); background: var(--surface); color: var(--text2); border-radius: 20px; padding: 6px 14px; font-size: 13px; font-family: 'DM Sans', sans-serif; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 5px; }
+  .btn-mes.active { background: var(--accent); color: white; border-color: var(--accent); }
+  .mes-dropdown { position: absolute; top: calc(100% + 6px); left: 0; background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px; box-shadow: 0 8px 24px rgba(26,18,8,0.14); z-index: 300; min-width: 160px; overflow: hidden; display: none; }
+  .mes-dropdown.open { display: block; }
+  .mes-opt { padding: 10px 16px; font-size: 13px; font-family: 'DM Sans', sans-serif; cursor: pointer; color: var(--text); border-bottom: 1px solid var(--border); }
+  .mes-opt:last-child { border-bottom: none; }
+  .mes-opt:hover { background: var(--surface2); }
+  .mes-opt.active { font-weight: 600; color: var(--accent); background: #FDF0E8; }
+
   .filtros-wrap { padding: 10px 16px 0; display: flex; flex-direction: column; gap: 6px; }
   .filtros { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
   .filtros::-webkit-scrollbar { display: none; }
   .filtro-btn { border: 1.5px solid var(--border); background: var(--surface); color: var(--text2); border-radius: 20px; padding: 6px 14px; font-size: 13px; font-family: 'DM Sans', sans-serif; cursor: pointer; white-space: nowrap; }
   .filtro-btn.active { background: var(--text); color: var(--bg); border-color: var(--text); }
-  .filtro-btn.active-origem { background: var(--accent); color: white; border-color: var(--accent); }
   .filtro-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; padding-left: 2px; }
 
-  /* LEADS */
   .leads-wrap { padding: 10px 16px 100px; display: flex; flex-direction: column; gap: 10px; }
   .lead-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; box-shadow: var(--shadow); cursor: pointer; border-left: 4px solid var(--border); }
   .lead-card.status-novo { border-left-color: var(--novo); }
@@ -86,7 +96,6 @@
   .empty { text-align: center; padding: 60px 20px; color: var(--text3); }
   .empty-icon { font-size: 40px; margin-bottom: 12px; }
 
-  /* MODAIS */
   .overlay { position: fixed; inset: 0; background: rgba(26,18,8,0.5); z-index: 200; display: none; align-items: flex-end; justify-content: center; }
   .overlay.open { display: flex; }
   .modal { background: var(--surface); border-radius: 20px 20px 0 0; width: 100%; max-width: 520px; max-height: 92vh; overflow-y: auto; padding: 24px 20px 40px; animation: slideUp 0.25s ease; }
@@ -102,6 +111,11 @@
   .btn-salvar { width: 100%; background: var(--accent); color: white; border: none; border-radius: 12px; padding: 15px; font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 8px; }
   .btn-salvar:disabled { background: var(--text3); cursor: not-allowed; }
   .btn-cancelar { width: 100%; background: transparent; color: var(--text3); border: none; padding: 12px; font-family: 'DM Sans', sans-serif; font-size: 14px; cursor: pointer; margin-top: 4px; }
+
+  /* toggle novo pedido vs corrigir */
+  .valor-modo-wrap { display: flex; gap: 0; border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 16px; }
+  .valor-modo-btn { flex: 1; border: none; background: var(--surface); color: var(--text2); padding: 10px 6px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: background 0.15s; text-align: center; }
+  .valor-modo-btn.active { background: var(--accent); color: white; }
 
   /* DETALHE */
   .detalhe-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
@@ -125,9 +139,18 @@
   /* HISTÓRICO DE PEDIDOS */
   .historico-wrap { margin-top: 16px; }
   .historico-title { font-size: 12px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
-  .pedido-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: var(--surface2); border-radius: 8px; margin-bottom: 6px; font-size: 13px; }
-  .pedido-data { color: var(--text3); }
-  .pedido-val { font-weight: 600; color: var(--confirmado); }
+  .pedido-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: var(--surface2); border-radius: 8px; margin-bottom: 6px; font-size: 13px; gap: 8px; }
+  .pedido-item-left { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+  .pedido-data { color: var(--text3); font-size: 12px; }
+  .pedido-val { font-weight: 600; color: var(--confirmado); white-space: nowrap; }
+  .pedido-actions { display: flex; gap: 6px; flex-shrink: 0; }
+  .pedido-btn { border: none; background: none; cursor: pointer; padding: 4px 6px; border-radius: 6px; font-size: 14px; line-height: 1; }
+  .pedido-btn:hover { background: var(--border); }
+  .pedido-total-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; margin-top: 4px; }
+
+  /* MODAL EDITAR PEDIDO */
+  .modal-pedido { background: var(--surface); border-radius: 16px; width: calc(100% - 32px); max-width: 360px; padding: 24px 20px; animation: slideUp 0.2s ease; }
+  .overlay-center { align-items: center; justify-content: center; }
 
   .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--text); color: var(--bg); padding: 12px 20px; border-radius: 10px; font-size: 14px; z-index: 999; transition: transform 0.3s; white-space: nowrap; }
   .toast.show { transform: translateX(-50%) translateY(0); }
@@ -156,7 +179,7 @@
 <div class="filtros-wrap" id="filtros-wrap"></div>
 <div class="leads-wrap" id="leads-area"></div>
 
-<!-- MODAL NOVO LEAD -->
+<!-- MODAL NOVO / EDITAR LEAD -->
 <div class="overlay" id="overlay-novo" onclick="fecharOverlay('overlay-novo')">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-handle"></div>
@@ -173,9 +196,11 @@
       <div class="form-group">
         <label class="form-label">Origem</label>
         <select class="form-select" id="inp-origem">
-          <option value="meta">📢 Meta Ads</option>
+          <option value="meta_ads">📢 Meta Ads</option>
           <option value="google_ads">🔍 Google Ads</option>
           <option value="google_maps">📍 Google Maps</option>
+          <option value="instagram">📸 Instagram</option>
+          <option value="facebook">📘 Facebook</option>
           <option value="cardapio">🍰 Cardápio</option>
           <option value="presencial">🏪 Presencial</option>
           <option value="indicacao">🤝 Indicação</option>
@@ -183,17 +208,29 @@
         </select>
       </div>
     </div>
-    <div class="form-row">
+
+    <!-- Toggle modo valor: só aparece ao editar -->
+    <div id="valor-modo-container" style="display:none">
+      <div class="form-label">Valor</div>
+      <div class="valor-modo-wrap">
+        <button class="valor-modo-btn active" id="modo-corrigir" onclick="setModoValor('corrigir')">✏️ Corrigir último pedido</button>
+        <button class="valor-modo-btn" id="modo-novo-pedido" onclick="setModoValor('novo_pedido')">➕ Novo pedido</button>
+      </div>
+    </div>
+    <!-- Quando novo lead, label simples -->
+    <div id="valor-simples-container">
       <div class="form-group">
         <label class="form-label">Valor (R$)</label>
         <input class="form-input" id="inp-valor" placeholder="0,00" type="number" step="0.01" min="0">
       </div>
+    </div>
+
+    <div class="form-row">
       <div class="form-group">
         <label class="form-label">Status</label>
         <select class="form-select" id="inp-status">
           <option value="novo">Novo contato</option>
           <option value="confirmado">Confirmado</option>
-          <option value="entregue">Entregue</option>
           <option value="recorrente">Recorrente</option>
           <option value="perdido">Perdido</option>
         </select>
@@ -204,6 +241,7 @@
       <textarea class="form-textarea" id="inp-obs" placeholder="Pedido, produto, data de entrega..."></textarea>
     </div>
     <input type="hidden" id="inp-id">
+    <input type="hidden" id="inp-modo-valor" value="corrigir">
     <button class="btn-salvar" id="btn-salvar-lead" onclick="salvarLead()">Salvar lead</button>
     <button class="btn-cancelar" onclick="fecharOverlay('overlay-novo')">Cancelar</button>
   </div>
@@ -212,6 +250,21 @@
 <!-- MODAL DETALHE -->
 <div class="overlay" id="overlay-detalhe" onclick="fecharOverlay('overlay-detalhe')">
   <div class="modal" onclick="event.stopPropagation()" id="modal-detalhe-content"></div>
+</div>
+
+<!-- MODAL EDITAR PEDIDO INDIVIDUAL -->
+<div class="overlay overlay-center" id="overlay-editar-pedido" onclick="fecharOverlay('overlay-editar-pedido')">
+  <div class="modal-pedido" onclick="event.stopPropagation()">
+    <div class="modal-title" style="font-size:18px;margin-bottom:16px">Corrigir valor do pedido</div>
+    <div class="form-group">
+      <label class="form-label">Valor correto (R$)</label>
+      <input class="form-input" id="inp-pedido-valor" type="number" step="0.01" min="0" placeholder="0,00">
+    </div>
+    <input type="hidden" id="inp-pedido-lead-id">
+    <input type="hidden" id="inp-pedido-index">
+    <button class="btn-salvar" onclick="salvarEdicaoPedido()">Salvar correção</button>
+    <button class="btn-cancelar" onclick="fecharOverlay('overlay-editar-pedido')">Cancelar</button>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -261,14 +314,14 @@ const STATUS_LIST = [
   { key: 'perdido', label: 'Perdido' },
 ];
 
-
-
 const PERIODOS = [
   { key: 'hoje', label: 'Hoje' },
   { key: 'semana', label: 'Esta semana' },
   { key: 'mes', label: 'Este mês' },
   { key: 'tudo', label: 'Tudo' },
 ];
+
+let mesSelecionado = null; // null = mês corrente; 'YYYY-MM' = mês específico
 
 // ========== LOCAL STORAGE ==========
 function salvarLocal() { localStorage.setItem('crm_confeitaria_v3', JSON.stringify(leads)); }
@@ -280,23 +333,29 @@ function totalLead(l) {
   return parseFloat(l.valor) || 0;
 }
 
-function ultimaAtividade(l) {
-  // usa ultimaInteracao se existir, senão data original
-  return l.ultimaInteracao || l.data || '';
-}
+function ultimaAtividade(l) { return l.ultimaInteracao || l.data || ''; }
 
 function filtrarPorPeriodo(lista) {
   const agora = new Date();
   const hoje = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate());
   const inicioSemana = new Date(hoje); inicioSemana.setDate(hoje.getDate() - hoje.getDay());
-  const inicioMes = new Date(agora.getFullYear(), agora.getMonth(), 1);
+  // Mês: corrente ou selecionado
+  let inicioMes, fimMes;
+  if (periodoAtivo === 'mes' && mesSelecionado) {
+    const [y, m] = mesSelecionado.split('-').map(Number);
+    inicioMes = new Date(y, m - 1, 1);
+    fimMes = new Date(y, m, 1); // exclusivo
+  } else {
+    inicioMes = new Date(agora.getFullYear(), agora.getMonth(), 1);
+    fimMes = new Date(agora.getFullYear(), agora.getMonth() + 1, 1);
+  }
   return lista.filter(l => {
     const ref = ultimaAtividade(l);
     if (!ref) return periodoAtivo === 'tudo';
     const d = new Date(ref);
     if (periodoAtivo === 'hoje') return d >= hoje;
     if (periodoAtivo === 'semana') return d >= inicioSemana;
-    if (periodoAtivo === 'mes') return d >= inicioMes;
+    if (periodoAtivo === 'mes') return d >= inicioMes && d < fimMes;
     return true;
   });
 }
@@ -321,7 +380,8 @@ function formatarDataHora(iso) {
 
 function normalizarOrigem(o) {
   if (!o) return 'whatsapp';
-  if (o === 'google') return 'google_ads'; // legado
+  if (o === 'google') return 'google_ads';
+  if (o === 'meta') return 'meta_ads';
   return o;
 }
 
@@ -355,13 +415,78 @@ function setBadge(tipo, txt) {
 // ========== RENDER ==========
 function renderTudo() { renderPeriodos(); renderStats(); renderBreakdown(); renderFiltros(); renderLeads(); }
 
-function renderPeriodos() {
-  document.getElementById('periodo-tabs').innerHTML = PERIODOS.map(p =>
-    `<button class="periodo-btn ${periodoAtivo === p.key ? 'active' : ''}" onclick="setPeriodo('${p.key}')">${p.label}</button>`
-  ).join('');
+function getMesesDisponiveis() {
+  const set = new Set();
+  leads.forEach(l => {
+    const ref = ultimaAtividade(l);
+    if (ref) {
+      const d = new Date(ref);
+      set.add(d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'));
+    }
+  });
+  return Array.from(set).sort().reverse(); // mais recente primeiro
 }
 
-function setPeriodo(key) { periodoAtivo = key; renderTudo(); }
+function labelMes(ym) {
+  const [y, m] = ym.split('-').map(Number);
+  const nomes = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  return nomes[m - 1] + ' ' + y;
+}
+
+function renderPeriodos() {
+  const agora = new Date();
+  const mesCorrente = agora.getFullYear() + '-' + String(agora.getMonth() + 1).padStart(2, '0');
+  const mesBtnLabel = periodoAtivo === 'mes'
+    ? (mesSelecionado && mesSelecionado !== mesCorrente ? labelMes(mesSelecionado) : 'Este mês') + ' ▾'
+    : 'Este mês ▾';
+
+  const btns = PERIODOS.filter(p => p.key !== 'mes').map(p =>
+    '<button class="periodo-btn ' + (periodoAtivo === p.key ? 'active' : '') + '" onclick="setPeriodo(\'' + p.key + '\')">' + p.label + '</button>'
+  ).join('');
+
+  const meses = getMesesDisponiveis();
+  const optsHtml = meses.map(ym =>
+    '<div class="mes-opt ' + (mesSelecionado === ym ? 'active' : '') + '" onclick="selecionarMes(\'' + ym + '\')">' + labelMes(ym) + '</div>'
+  ).join('');
+
+  document.getElementById('periodo-tabs').innerHTML = btns +
+    '<div class="mes-picker-wrap" id="mes-picker-wrap">' +
+      '<button class="periodo-btn btn-mes ' + (periodoAtivo === 'mes' ? 'active' : '') + '" onclick="toggleMesDropdown(event)">' + mesBtnLabel + '</button>' +
+      '<div class="mes-dropdown" id="mes-dropdown">' + optsHtml + '</div>' +
+    '</div>';
+}
+
+function toggleMesDropdown(e) {
+  e.stopPropagation();
+  const dd = document.getElementById('mes-dropdown');
+  const isOpen = dd.classList.contains('open');
+  // fecha qualquer dropdown aberto e abre este
+  document.querySelectorAll('.mes-dropdown').forEach(d => d.classList.remove('open'));
+  if (!isOpen) {
+    dd.classList.add('open');
+    // clique fora fecha
+    setTimeout(() => document.addEventListener('click', fecharMesDropdown, { once: true }), 0);
+  }
+  // Se não estava no modo mês, ativa
+  if (periodoAtivo !== 'mes') { periodoAtivo = 'mes'; renderTudo(); }
+}
+
+function fecharMesDropdown() {
+  document.querySelectorAll('.mes-dropdown').forEach(d => d.classList.remove('open'));
+}
+
+function selecionarMes(ym) {
+  mesSelecionado = ym;
+  periodoAtivo = 'mes';
+  fecharMesDropdown();
+  renderTudo();
+}
+
+function setPeriodo(key) {
+  periodoAtivo = key;
+  if (key !== 'mes') mesSelecionado = null; // reseta seleção ao sair do modo mês
+  renderTudo();
+}
 
 function renderStats() {
   let filtrados = filtrarPorPeriodo(leads);
@@ -404,23 +529,26 @@ function renderBreakdown() {
   const items = origens.map(ok => {
     const grupo = filtrados.filter(l => normalizarOrigem(l.origem) === ok);
     const fat = calcularFaturamento(grupo);
-    return { key: ok, label: ORIGENS[ok] || ok, fat, leads: grupo.length };
+    const vendas = grupo.filter(l => ['confirmado','entregue','recorrente'].includes(l.status)).length;
+    const conv = grupo.length ? Math.round((vendas / grupo.length) * 100) : 0;
+    const alertaZero = grupo.length > 0 && fat === 0;
+    return { key: ok, label: ORIGENS[ok] || ok, fat, leads: grupo.length, conv, alertaZero };
   });
-
-  if (!items.length) { document.getElementById('breakdown-area').innerHTML = ''; return; }
-
-  document.getElementById('breakdown-area').innerHTML = `
-    <div class="breakdown-title" style="padding-top:10px">Por canal</div>
-    <div class="breakdown-grid">
-      ${items.map(i => `
-        <div class="breakdown-item ${origemAtiva === i.key ? 'active-origem' : ''}" onclick="setOrigem('${i.key}')">
-          <div class="breakdown-item-val">${formatarValor(i.fat)}</div>
-          <div class="breakdown-item-label">${i.label}</div>
-          <div class="breakdown-item-leads">${i.leads} lead${i.leads > 1 ? 's' : ''}</div>
-        </div>
-      `).join('')}
-    </div>
-  `;
+  // Ordena por faturamento desc; empates por leads desc
+  items.sort((a, b) => b.fat !== a.fat ? b.fat - a.fat : b.leads - a.leads);
+  const cardsHtml = items.map(i => {
+    const ativo = origemAtiva === i.key;
+    const cls = 'breakdown-item' + (ativo ? ' active-origem' : (i.alertaZero ? ' alerta-zero' : ''));
+    return '<div class="' + cls + '" onclick="setOrigem(\'' + i.key + '\')">'
+      + '<div class="breakdown-item-val">' + formatarValor(i.fat) + '</div>'
+      + '<div class="breakdown-item-label">' + i.label + '</div>'
+      + '<div class="breakdown-item-leads">' + i.leads + ' lead' + (i.leads !== 1 ? 's' : '') + '</div>'
+      + '<div class="breakdown-item-conv">' + i.conv + '% conv.</div>'
+      + '</div>';
+  }).join('');
+  document.getElementById('breakdown-area').innerHTML =
+    '<div class="breakdown-title" style="padding-top:10px">Por canal</div>'
+    + '<div class="breakdown-grid">' + cardsHtml + '</div>';
 }
 
 function setOrigem(key) {
@@ -429,22 +557,23 @@ function setOrigem(key) {
 }
 
 function renderFiltros() {
-  document.getElementById('filtros-wrap').innerHTML = `
-    <div class="filtros">
-      ${[{ key: 'todos', label: 'Todos' }, ...STATUS_LIST].map(o =>
-        `<button class="filtro-btn ${filtroAtivo === o.key ? 'active' : ''}" onclick="setFiltro('${o.key}')">${o.label}</button>`
-      ).join('')}
-    </div>
-  `;
+  const btnSemValor = '<button class="filtro-btn sem-valor' + (filtroAtivo === 'sem_valor' ? ' active' : '') + '" onclick="setFiltro(\'sem_valor\')">⚠️ Sem valor</button>';
+  const btnsTodos = [{ key: 'todos', label: 'Todos' }, ...STATUS_LIST]
+    .map(o => '<button class="filtro-btn' + (filtroAtivo === o.key ? ' active' : '') + '" onclick="setFiltro(\'' + o.key + '\')">' + o.label + '</button>')
+    .join('');
+  document.getElementById('filtros-wrap').innerHTML = '<div class="filtros">' + btnsTodos + btnSemValor + '</div>';
 }
 
 function setFiltro(key) { filtroAtivo = key; renderFiltros(); renderLeads(); }
 
 function renderLeads() {
   let filtrados = filtrarPorPeriodo(leads);
-  if (filtroAtivo !== 'todos') filtrados = filtrados.filter(l => l.status === filtroAtivo);
+  if (filtroAtivo === 'sem_valor') {
+    filtrados = filtrados.filter(l => totalLead(l) === 0);
+  } else if (filtroAtivo !== 'todos') {
+    filtrados = filtrados.filter(l => l.status === filtroAtivo);
+  }
   if (origemAtiva !== 'todas') filtrados = filtrados.filter(l => normalizarOrigem(l.origem) === origemAtiva);
-  // Ordena pela última atividade (mais recente primeiro)
   const sorted = [...filtrados].sort((a, b) => new Date(ultimaAtividade(b)) - new Date(ultimaAtividade(a)));
   const area = document.getElementById('leads-area');
   if (!sorted.length) {
@@ -490,6 +619,13 @@ function abrirDetalhePorEl(el) {
   if (lead) abrirDetalhe(lead.id);
 }
 
+// ========== TOGGLE MODO VALOR ==========
+function setModoValor(modo) {
+  document.getElementById('inp-modo-valor').value = modo;
+  document.getElementById('modo-corrigir').className = 'valor-modo-btn' + (modo === 'corrigir' ? ' active' : '');
+  document.getElementById('modo-novo-pedido').className = 'valor-modo-btn' + (modo === 'novo_pedido' ? ' active' : '');
+}
+
 // ========== MODAL NOVO / EDITAR ==========
 function abrirModalNovo() {
   editandoId = null;
@@ -502,6 +638,9 @@ function abrirModalNovo() {
   document.getElementById('inp-origem').value = 'whatsapp';
   document.getElementById('inp-status').value = 'novo';
   document.getElementById('inp-id').value = '';
+  // esconde toggle, mostra campo simples
+  document.getElementById('valor-modo-container').style.display = 'none';
+  document.getElementById('valor-simples-container').style.display = 'block';
   document.getElementById('overlay-novo').classList.add('open');
   setTimeout(() => document.getElementById('inp-nome').focus(), 300);
 }
@@ -515,10 +654,22 @@ function abrirModalEditar(id) {
   document.getElementById('inp-nome').value = l.nome;
   document.getElementById('inp-tel').value = String(l.telefone || '');
   document.getElementById('inp-obs').value = l.obs || '';
-  document.getElementById('inp-valor').value = totalLead(l) || '';
   document.getElementById('inp-origem').value = normalizarOrigem(l.origem);
   document.getElementById('inp-status').value = l.status;
   document.getElementById('inp-id').value = l.id;
+
+  // mostra toggle se já tem valor, esconde campo simples
+  const temValor = totalLead(l) > 0 || (l.pedidos && l.pedidos.length > 0);
+  if (temValor) {
+    document.getElementById('valor-modo-container').style.display = 'block';
+    document.getElementById('valor-simples-container').style.display = 'none';
+    setModoValor('corrigir'); // padrão: corrigir
+  } else {
+    document.getElementById('valor-modo-container').style.display = 'none';
+    document.getElementById('valor-simples-container').style.display = 'block';
+  }
+  document.getElementById('inp-valor').value = totalLead(l) || '';
+
   fecharOverlay('overlay-detalhe');
   document.getElementById('overlay-novo').classList.add('open');
 }
@@ -530,29 +681,57 @@ function salvarLead() {
   btn.disabled = true;
   const novoValor = parseFloat(document.getElementById('inp-valor').value) || 0;
   const agora = new Date().toISOString();
+  const modoValor = document.getElementById('inp-modo-valor').value;
 
   if (editandoId) {
     const idx = leads.findIndex(l => l.id === editandoId);
-    const l = leads[idx];
-    // Se valor mudou, adiciona ao histórico de pedidos
-    if (novoValor > 0 && novoValor !== totalLead(l)) {
-      if (!l.pedidos) l.pedidos = l.valor ? [{ data: l.data, valor: l.valor }] : [];
-      l.pedidos.push({ data: agora, valor: novoValor });
-      l.valor = novoValor;
+    const l = { ...leads[idx] };
+
+    if (!l.pedidos) {
+      // migra valor legado para array
+      l.pedidos = l.valor ? [{ data: l.data || agora, valor: parseFloat(l.valor) }] : [];
     }
+
+    const valorContainer = document.getElementById('valor-modo-container');
+    const usandoToggle = valorContainer.style.display !== 'none';
+
+    if (usandoToggle) {
+      if (modoValor === 'corrigir' && novoValor > 0) {
+        // CORRIGE o último pedido — sem duplicar
+        if (l.pedidos.length > 0) {
+          l.pedidos[l.pedidos.length - 1].valor = novoValor;
+        } else {
+          l.pedidos = [{ data: agora, valor: novoValor }];
+        }
+        l.valor = novoValor;
+      } else if (modoValor === 'novo_pedido' && novoValor > 0) {
+        // ADICIONA novo pedido ao histórico
+        l.pedidos.push({ data: agora, valor: novoValor });
+        l.valor = novoValor;
+      }
+    } else {
+      // sem toggle (lead sem valor anterior): adiciona como primeiro pedido
+      if (novoValor > 0) {
+        l.pedidos = [{ data: agora, valor: novoValor }];
+        l.valor = novoValor;
+      }
+    }
+
     leads[idx] = {
       ...l,
-      nome: nome,
+      nome,
       telefone: document.getElementById('inp-tel').value.trim(),
       obs: document.getElementById('inp-obs').value.trim(),
       origem: document.getElementById('inp-origem').value,
       status: document.getElementById('inp-status').value,
       ultimaInteracao: agora,
     };
+
     salvarLocal();
+    // Sheets: envia o objeto completo com pedidos já corrigidos → replace total na planilha
     syncSheets('atualizar', leads[idx]);
   } else {
-    const valor = novoValor;
+    // NOVO LEAD
     const lead = {
       id: 'l' + Date.now(),
       nome,
@@ -560,8 +739,8 @@ function salvarLead() {
       obs: document.getElementById('inp-obs').value.trim(),
       origem: document.getElementById('inp-origem').value,
       status: document.getElementById('inp-status').value,
-      valor: valor || '',
-      pedidos: valor > 0 ? [{ data: agora, valor }] : [],
+      valor: novoValor || '',
+      pedidos: novoValor > 0 ? [{ data: agora, valor: novoValor }] : [],
       data: agora,
       ultimaInteracao: agora,
     };
@@ -571,10 +750,65 @@ function salvarLead() {
   }
 
   btn.disabled = false;
-  btn.textContent = editandoId ? 'Atualizar' : 'Salvar lead';
   fecharOverlay('overlay-novo');
   renderTudo();
-  showToast(editandoId ? 'Lead atualizado' : 'Lead adicionado');
+  showToast(editandoId ? 'Lead atualizado ✓' : 'Lead adicionado ✓');
+}
+
+// ========== EDITAR PEDIDO INDIVIDUAL (no histórico) ==========
+function abrirEditarPedido(leadId, pedidoIndex) {
+  const l = leads.find(x => x.id === leadId);
+  if (!l || !l.pedidos || !l.pedidos[pedidoIndex]) return;
+  document.getElementById('inp-pedido-lead-id').value = leadId;
+  document.getElementById('inp-pedido-index').value = pedidoIndex;
+  document.getElementById('inp-pedido-valor').value = l.pedidos[pedidoIndex].valor;
+  fecharOverlay('overlay-detalhe');
+  document.getElementById('overlay-editar-pedido').classList.add('open');
+}
+
+function salvarEdicaoPedido() {
+  const leadId = document.getElementById('inp-pedido-lead-id').value;
+  const idx = parseInt(document.getElementById('inp-pedido-index').value);
+  const novoValor = parseFloat(document.getElementById('inp-pedido-valor').value);
+  if (!novoValor || novoValor <= 0) { showToast('Informe um valor válido'); return; }
+
+  const lidx = leads.findIndex(l => l.id === leadId);
+  if (lidx < 0) return;
+
+  // Corrige o valor do pedido específico no array
+  leads[lidx].pedidos[idx].valor = novoValor;
+  // Atualiza valor total do lead
+  leads[lidx].valor = totalLead(leads[lidx]);
+  leads[lidx].ultimaInteracao = new Date().toISOString();
+
+  salvarLocal();
+  // Envia objeto completo → Apps Script faz replace total → sem duplicação
+  syncSheets('atualizar', leads[lidx]);
+
+  fecharOverlay('overlay-editar-pedido');
+  renderTudo();
+  showToast('Valor corrigido ✓');
+  // Reabre o detalhe atualizado
+  setTimeout(() => abrirDetalhe(leadId), 300);
+}
+
+function excluirPedido(leadId, pedidoIndex) {
+  if (!confirm('Excluir este pedido do histórico?')) return;
+  const lidx = leads.findIndex(l => l.id === leadId);
+  if (lidx < 0) return;
+
+  leads[lidx].pedidos.splice(pedidoIndex, 1);
+  leads[lidx].valor = totalLead(leads[lidx]);
+  leads[lidx].ultimaInteracao = new Date().toISOString();
+
+  salvarLocal();
+  // Replace total: Sheets recebe o array já sem o pedido excluído
+  syncSheets('atualizar', leads[lidx]);
+
+  fecharOverlay('overlay-detalhe');
+  renderTudo();
+  showToast('Pedido removido ✓');
+  setTimeout(() => abrirDetalhe(leadId), 300);
 }
 
 // ========== MODAL DETALHE ==========
@@ -589,23 +823,36 @@ function abrirDetalhe(id) {
   const telLimpo = String(l.telefone || '').replace(/\D/g, '');
   const total = totalLead(l);
 
-  // Histórico de pedidos
+  // Histórico de pedidos com botões ✏️ e 🗑️
   let historicoHtml = '';
-  if (l.pedidos && l.pedidos.length > 0) {
-    const itens = l.pedidos.map(p => `
+  const pedidos = l.pedidos && l.pedidos.length > 0
+    ? l.pedidos
+    : (l.valor ? [{ data: l.data, valor: l.valor }] : []);
+
+  if (pedidos.length > 0) {
+    const itens = pedidos.map((p, i) => `
       <div class="pedido-item">
-        <span class="pedido-data">${formatarDataHora(p.data)}</span>
-        <span class="pedido-val">${formatarValor(p.valor)}</span>
+        <div class="pedido-item-left">
+          <span class="pedido-data">${formatarDataHora(p.data) || '—'}</span>
+          <span class="pedido-val">${formatarValor(p.valor)}</span>
+        </div>
+        <div class="pedido-actions">
+          <button class="pedido-btn" title="Corrigir valor" onclick="abrirEditarPedido('${l.id}', ${i})">✏️</button>
+          ${pedidos.length > 1 ? `<button class="pedido-btn" title="Excluir pedido" onclick="excluirPedido('${l.id}', ${i})">🗑️</button>` : ''}
+        </div>
       </div>
     `).join('');
+
     historicoHtml = `
       <div class="historico-wrap">
         <div class="historico-title">Histórico de pedidos</div>
         ${itens}
-        <div class="pedido-item" style="background:var(--surface);border-top:1px solid var(--border);margin-top:4px">
-          <span style="font-weight:600;font-size:13px">Total acumulado</span>
-          <span class="pedido-val">${formatarValor(total)}</span>
-        </div>
+        ${pedidos.length > 1 ? `
+          <div class="pedido-total-row">
+            <span style="font-weight:600;font-size:13px">Total acumulado</span>
+            <span class="pedido-val">${formatarValor(total)}</span>
+          </div>
+        ` : ''}
       </div>
     `;
   }
